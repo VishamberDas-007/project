@@ -27,7 +27,7 @@ exports.productInsertValidate = [
 		}),
 
 	//validating the imageName
-	check("imageName").not().isEmpty().withMessage({
-		message: "Image name not entered",
-	}),
+	// check("imageName").not().isEmpty().withMessage({
+	// 	message: "Image name not entered",
+	// }),
 ];

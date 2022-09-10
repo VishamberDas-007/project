@@ -46,6 +46,7 @@ routes.post(
 		}
 
 		// result from controller
+		console.log(fileName);
 		const result = await customer.product.insert(req, fileName);
 		console.log({ result });
 		return res.status(result.status).json({ result });

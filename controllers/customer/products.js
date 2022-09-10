@@ -21,7 +21,7 @@ exports.insert = async (req, fileName) => {
 		if (productExists) {
 			return responses.alreadyExists("Product already present");
 		}
-
+		console.log(fileName);
 		// adding to the product model
 		const addProduct = await productModel.create({
 			name: productDetails.name,

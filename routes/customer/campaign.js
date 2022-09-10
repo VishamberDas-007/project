@@ -18,7 +18,14 @@ routes.post("/insert", validation.campaignInsertValidate, async (req, res) => {
 });
 
 // get method for listing product to edit
-routes.get("/edit/", async (req, res) => {
+routes.get("/edit/:id", validation.campaignIdValidate, async (req, res) => {
+	//validation result
+	const errors = await validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.json(errors);
+	}
+
+	//result from controller
 	let result = await customer.campaign.edit(req);
 	return res.status(result.status).json(result);
 });
@@ -31,8 +38,8 @@ routes.get("/listing", async (req, res) => {
 
 // delete method for delete all products
 routes.delete(
-	"/delete/",
-	validation.campaignDeleteValidate,
+	"/delete/:id",
+	validation.campaignIdValidate,
 	async (req, res) => {
 		//validation result
 		const errors = await validationResult(req);

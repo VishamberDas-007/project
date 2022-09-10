@@ -34,15 +34,35 @@ fs.readdirSync(__dirname)
 		db[model.name] = model;
 	});
 
-Object.keys(db).forEach((modelName) => {
-	if (db[modelName].associate) {
-		db[modelName].associate(db);
-	}
-});
+// Object.keys(db).forEach((modelName) => {
+// 	if (db[modelName].associate) {
+// 		db[modelName].associate(db);
+// 	}
+// });
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 db.products = require("./products")(sequelize, Sequelize);
 db.campaign_types = require("./campaign_types")(sequelize, Sequelize);
 db.campaign_details = require("./campaign_details")(sequelize, Sequelize);
+
+db.campaign_details.belongsTo(db.campaign_types, {
+	foreignKey: "campaign_type_id",
+	targetKey: "id",
+});
+
+db.campaign_types.hasMany(db.campaign_details, {
+	foreignKey: "campaign_type_id",
+	sourceKey: "id",
+});
+
+db.products.hasMany(db.campaign_details, {
+	foreignKey: "prod_id",
+	sourceKey: "id",
+});
+db.campaign_details.belongsTo(db.products, {
+	foreignKey: "prod_id",
+	targetKey: "id",
+});
+
 module.exports = db;

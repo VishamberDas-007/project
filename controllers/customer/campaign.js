@@ -11,8 +11,11 @@
 const responses = require("../../responses/response"); // importing the responses
 
 const db = require("../../models/index"); // importing the db to access all models
+const campaignDetailsModel = require("../../models/campaign_details");
+console.log(campaignDetailsModel);
 const moment = require("moment"); // importing for formating date
 const { Op } = require("sequelize");
+// const e = require("express");
 
 // insert/update function is used to insert campaign details
 exports.insert = async (req) => {
@@ -124,67 +127,52 @@ exports.insert = async (req) => {
 	}
 };
 
-// edit function is used to edit campaign details
+// edit/listing function is used to edit campaign details
 exports.edit = async (req) => {
 	try {
-		const id = req.query.id;
+		const id = req.params.id;
 
 		// checking if the campaign exists
+
 		const campaignExists = await db.campaign_details.findOne({
-			// where: {
-			// 	id: id,
-			// 	// on_off: true,
-			// },
+			where: {
+				id: id,
+				on_off: true,
+			},
 			include: [
 				{
 					model: db.campaign_types,
-					// as: "campaign_types",
-					where: {
-						id: db.campaign_details.campaign_type_id,
-					},
+				},
+				{
+					model: db.products,
 				},
 			],
 		});
 
-		// const campaignExists = await db.campaign_types.findAll({
-		// 	include: {
-		// 		model: db.campaign_details,
-		// 	},
-		// });
-
 		if (!campaignExists) {
 			return responses.notFound("No such campaign found");
+		} else {
+			return responses.successResponse("Campaign found successfully!!", {
+				id: campaignExists.dataValues.id,
+				campaign_type_id: campaignExists.dataValues.campaign_type_id,
+				prod_id: campaignExists.dataValues.prod_id,
+				start_date: campaignExists.dataValues.start_date,
+				end_date: campaignExists.dataValues.end_date,
+				clicks: campaignExists.dataValues.clicks,
+				budget: campaignExists.dataValues.budget,
+				location: campaignExists.dataValues.location,
+				on_off: campaignExists.dataValues.on_off,
+				status: campaignExists.dataValues.status,
+				campaign_type_name: campaignExists.dataValues.campaign_type.name,
+				campaign_platform_name:
+					campaignExists.dataValues.campaign_type.platform_name,
+				product_name: campaignExists.dataValues.product.name,
+				image_name: campaignExists.dataValues.product.image_name,
+			});
 		}
-
-		const productDetails = await db.products.findOne({
-			where: {
-				id: id,
-			},
-		});
-
-		const compaignDetails = {
-			// id: ,
-			// campaign_type_id: 1,
-			// prod_id: 2,
-			name: productDetails.dataValues.name,
-			start_date: campaignExists.dataValues.start_date,
-			end_date: campaignExists.dataValues.end_date,
-			clicks: campaignExists.dataValues.clicks,
-			budget: campaignExists.dataValues.budget,
-			location: campaignExists.dataValues.location,
-			on_off: campaignExists.dataValues.on_off,
-			status: campaignExists.dataValues.status,
-		};
-		// console.log(productDetails);
-		// campaignExists.product_name = productDetails.dataValues.name;
-		// campaignExists.image_name = productDetails.dataValues.image_name;
-		return responses.successResponse(
-			"Campaign found successfully!!",
-			compaignDetails
-		);
 	} catch (error) {
 		return responses.errorResponse(
-			"Error occurred while editing campaign",
+			"Error occurred while listing campaign",
 			error
 		);
 	}
@@ -193,17 +181,52 @@ exports.edit = async (req) => {
 //listing function used for listing the campaign details
 exports.listing = async (req) => {
 	try {
+		var arr = [];
+		const fileLocation = "http://localhost:7777/uploads/";
 		// checking if the campaign exists
-		const campaignExists = await db.campaign_details.findAll();
+		const campaignExists = await db.campaign_details.findAll({
+			include: [
+				{
+					model: db.campaign_types,
+					attributes: ["name", "platform_name"],
+				},
+				{
+					model: db.products,
+					attributes: ["name", "image_name"],
+				},
+			],
+			// nest: true,
+		});
+		// .then((data) => {
+		// 	console.log(data.get({ plain: true }));
+		// });
 
-		if (!campaignExists) {
+		if (campaignExists.length == 0) {
 			return responses.notFound("No campaigns found");
-		}
+		} else {
+			campaignExists.forEach((element) => {
+				arr.push({
+					id: element.dataValues.id,
+					campaign_type_id: element.dataValues.campaign_type_id,
+					prod_id: element.dataValues.prod_id,
+					start_date: element.dataValues.start_date,
+					end_date: element.dataValues.end_date,
+					clicks: element.dataValues.clicks,
+					budget: element.dataValues.budget,
+					location: element.dataValues.location,
+					on_off: element.dataValues.on_off,
+					status: element.dataValues.status,
+					campaign_type_name: element.dataValues.campaign_type.name,
+					campaign_platform_name:
+						element.dataValues.campaign_type.platform_name,
+					product_name: element.dataValues.product.name,
+					image_name: fileLocation + element.dataValues.product.image_name,
+				});
+				console.log(arr);
+			});
 
-		return responses.successResponse(
-			"Campaigns found successfully!!",
-			campaignExists
-		);
+			return responses.successResponse("Campaigns found successfully!!", arr);
+		}
 	} catch (error) {
 		return responses.errorResponse(
 			"Error occurred while editing campaign",
@@ -216,7 +239,7 @@ exports.listing = async (req) => {
 exports.delete = async (req, res) => {
 	try {
 		// requesting and initializing the campaign id to be deleted
-		const id = req.query.id;
+		const id = req.params.id;
 
 		// requesting the campaign details from the model
 		// check if campaign exists

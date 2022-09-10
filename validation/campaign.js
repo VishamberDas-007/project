@@ -1,4 +1,4 @@
-const { check, body } = require("express-validator");
+const { check, body, param } = require("express-validator");
 
 // validation of campaign insertion
 exports.campaignInsertValidate = [
@@ -85,9 +85,9 @@ exports.campaignInsertValidate = [
 
 // validation of campaign deletion
 
-exports.campaignDeleteValidate = [
+exports.campaignIdValidate = [
 	//validating the id
-	check("id")
+	param("id")
 		.notEmpty()
 		.withMessage({
 			message: "Id not entered",
