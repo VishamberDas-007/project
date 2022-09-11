@@ -1,13 +1,13 @@
 const express = require("express"); // importing the express package
 const routes = express.Router(); // initializing the router function
 const { customer } = require("../../controllers/index"); // importing the customer ctrl
-const { validationResult } = require("express-validator");
+const { validationResult } = require("express-validator"); //importing validation result from express validator
 const validation = require("../../validation/product"); // importing the validation for validating purpose
-const multer = require("multer");
-const path = require("path");
-const fileLocation = path.join(__dirname, "../../uploads");
+const multer = require("multer"); // importing multer
+const path = require("path"); // importing path
+const fileLocation = path.join(__dirname, "../../uploads"); // using path to obtain the file location
 
-var fileName, timeStamp, fileExtension, tempFileName;
+var fileName, timeStamp, fileExtension; // variables to be used inside multer
 
 var storage = multer.diskStorage({
 	destination: function (req, file, cb) {
@@ -46,9 +46,8 @@ routes.post(
 		}
 
 		// result from controller
-		console.log(fileName);
+
 		const result = await customer.product.insert(req, fileName);
-		console.log({ result });
 		return res.status(result.status).json({ result });
 	}
 );
@@ -59,4 +58,4 @@ routes.get("/listing", async (req, res) => {
 	return res.status(result.status).json(result);
 });
 
-module.exports = routes;
+module.exports = routes; // exporting routes

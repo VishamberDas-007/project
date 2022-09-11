@@ -2,6 +2,7 @@
 module.exports = {
 	async up(queryInterface, Sequelize) {
 		await queryInterface.createTable("campaign_details", {
+			// below are the required fields to understand the campaign details table
 			id: {
 				allowNull: false,
 				autoIncrement: true,

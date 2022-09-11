@@ -1,4 +1,4 @@
-const { check, body, param } = require("express-validator");
+const { check, body, param } = require("express-validator"); // importing the required constraints for validating the requests
 
 // validation of campaign insertion
 exports.campaignInsertValidate = [

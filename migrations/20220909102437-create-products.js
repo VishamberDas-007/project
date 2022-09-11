@@ -2,6 +2,7 @@
 module.exports = {
 	async up(queryInterface, Sequelize) {
 		await queryInterface.createTable("products", {
+			// below are the required fields to understand the products table
 			id: {
 				allowNull: false,
 				autoIncrement: true,

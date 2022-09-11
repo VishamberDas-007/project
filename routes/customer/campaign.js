@@ -1,7 +1,7 @@
 const express = require("express"); // importing the express package
 const routes = express.Router(); // initializing the router function
-const { customer } = require("../../controllers/index");
-const { validationResult } = require("express-validator");
+const { customer } = require("../../controllers/index"); // importing customer from cnotroller index
+const { validationResult } = require("express-validator"); // importing the inbuild validation result from express validaor
 const validation = require("../../validation/campaign"); // importing the validation for validating purpose
 
 // post method for listing product
@@ -53,4 +53,16 @@ routes.delete(
 	}
 );
 
-module.exports = routes;
+// get method for listingg all campaign types
+routes.get("/list", async (req, res) => {
+	let result = await customer.campaign.list(req);
+	return res.status(result.status).json(result);
+});
+
+// update the on_off status
+routes.post("/on_off/:id", validation.campaignIdValidate, async (req, res) => {
+	let result = await customer.campaign.on_off_status_change(req);
+	return res.status(result.status).json(result);
+});
+
+module.exports = routes; //exporting routes

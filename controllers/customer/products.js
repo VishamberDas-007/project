@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require("path"); // importing the path
 const responses = require("../../responses/response"); // importing the responses
 const productModel = require("../../models/index").products; // importing the product model
 
@@ -11,7 +11,7 @@ exports.insert = async (req, fileName) => {
 			price: req.body.price,
 			imageName: fileName,
 		};
-		console.log(productDetails);
+
 		// check if the product name already exists
 		const productExists = await productModel.findOne({
 			where: {
@@ -21,19 +21,13 @@ exports.insert = async (req, fileName) => {
 		if (productExists) {
 			return responses.alreadyExists("Product already present");
 		}
-		console.log(fileName);
+
 		// adding to the product model
 		const addProduct = await productModel.create({
 			name: productDetails.name,
 			price: productDetails.price,
 			image_name: productDetails.imageName,
 		});
-
-		// adding the image name to image model
-		// const addImage = await imageModel.create({
-		// 	name: productDetails.imageName,
-		// 	prod_id: addProduct.dataValues.id,
-		// });
 
 		// returning the successs response
 		return responses.successResponse(
@@ -60,11 +54,10 @@ exports.listing = async (req, res) => {
 		if (!productExists) {
 			return responses.notFound("No product found!!");
 		}
-		console.log(productExists);
 
+		// to assign the prefix to the image name to be accessed globally
 		productExists.forEach((element) => {
 			if (element.dataValues.image_name) {
-				console.log(element.dataValues.image_name);
 				var temp = element.dataValues.image_name;
 				element.dataValues.image_name = fileLocation + temp;
 			}
